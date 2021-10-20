@@ -16,11 +16,11 @@
 using namespace std;
 
 struct Node {
-    int dado;
+    int dado{};
     struct Node* esquerdo, * direito;
 
-    // Cria nova árvore pelo construtor
-    Node(int valor)
+    // Cria árvore pelo construtor
+    explicit Node(int valor)
     {
         dado = valor;
         esquerdo = nullptr;
@@ -82,24 +82,7 @@ struct Node {
         }
     }
 
-    void imprimeArvore() {
-        /*string spaces = "";
-        Node* aux = this->esquerdo;
-        while(aux != nullptr)
-        {
-            spaces += " ";
-            aux = aux->esquerdo;
-        }
-        aux = this->direito;
-        while(aux != nullptr)
-        {
-            spaces += " ";
-            aux = aux->direito;
-        }
-        if (this != nullptr) cout << spaces << std::to_string(this->dado);
-        if (this->esquerdo || this ->direito) { cout << endl; }
-        if (this->esquerdo != nullptr) { this->esquerdo->imprimeArvore(); cout << " "; }
-        if (this->direito != nullptr) { cout << " "; this->direito->imprimeArvore(); }*/
+    void imprimeArvore() const {
         cout << "Nó: " << std::to_string(this->dado) << endl;
         if (this->esquerdo != nullptr) cout << "Nó esquerdo: " << std::to_string(this->esquerdo->dado) << endl;
         else cout << "Nó esquerdo: NULL"<< endl;
@@ -140,60 +123,27 @@ struct Node {
         }
     }
 
-    int max_depth(Node* n)
+    static void printBT(const string& prefix, const Node* node, bool isLeft)
     {
-        if (!n) return 0;
-        return 1 + std::max(max_depth(n->esquerdo), max_depth(n->direito));
+        if( node != nullptr )
+        {
+            cout << prefix;
+
+            cout << (isLeft ? "├──" : "└──" );
+
+            // Valor do node
+            cout << node->dado << std::endl;
+
+            // Próximo nível da árvore - troncos da esquerda e da direita
+            printBT( prefix + (isLeft ? "│   " : "    "), node->esquerdo, true);
+            printBT( prefix + (isLeft ? "│   " : "    "), node->direito, false);
+        }
     }
 
-    void prt()
+    void printBT(const Node* node)
     {
-        struct node_depth
-        {
-            Node* n;
-            int lvl;
-            node_depth(Node* n_, int lvl_) : n(n_), lvl(lvl_) {}
-        };
-
-        int depth = max_depth(this);
-
-        char buf[1024];
-        int last_lvl = 0;
-        int offset = (1 << depth) - 1;
-
-        // using a queue means we perform a breadth first iteration through the tree
-        list<node_depth> q;
-
-        q.push_back(node_depth(this, last_lvl));
-        while (q.size())
-        {
-            const node_depth& nd = *q.begin();
-
-            // moving to a new level in the tree, output a new line and calculate new offset
-            if (last_lvl != nd.lvl)
-            {
-                std::cout << "\n";
-
-                last_lvl = nd.lvl;
-                offset = (1 << (depth - nd.lvl)) - 1;
-            }
-
-            // output <offset><data><offset>
-            if (nd.n)
-                sprintf(buf, " %*s%d%*s", offset, " ", nd.n->dado, offset, " ");
-            else
-                sprintf(buf, " %*s", offset << 1, " ");
-            std::cout << buf;
-
-            if (nd.n)
-            {
-                q.push_back(node_depth(nd.n->esquerdo, last_lvl + 1));
-                q.push_back(node_depth(nd.n->direito, last_lvl + 1));
-            }
-
-            q.pop_front();
-        }
-        std::cout << "\n";
+        cout << "Legenda: ├── esquerdo     └── direito ou raiz" <<endl;
+        printBT("", node, false);
     }
 
 };
